@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NEXUS — Panel de Monitoreo Espacial</title>
+    <link rel="stylesheet" href="./src/css/style.css" />
+    <link rel="stylesheet" href="./src/css/dashboard.css" />
+    <link rel="icon" href="public/logo.png" />
+  </head>
+  <body>
+    <!-- Carga de inicio (Buscado y agregado desde páginas web extras y ayuda de ia)-->
+    <div id="loading-overlay" role="status" aria-live="polite">
+      <p class="loading-logo">NEXUS</p>
+      <p class="loading-subtitle">Sistema de Inteligencia Espacial</p>
+      <div class="loading-bar-container">
+        <p class="loading-status" id="loading-status-text">
+          Conectando con NASA...
+        </p>
+        <progress
+          class="loading-progress"
+          id="loading-progress"
+          value="20"
+          max="100"
+          aria-label="Cargando datos"
+        ></progress>
+      </div>
+    </div>
+
+    <!-- HEADER -->
+    <header class="site-header">
+      <div class="header-brand">
+        <a href="index.html">
+          <h1 class="header-logo">NEXUS</h1>
+        </a>
+        <p class="header-tagline text-label">
+          Sistema de Inteligencia Espacial
+        </p>
+      </div>
+
+      <!-- Buscador glitch (uiverse.io) -->
+      <div class="header-center">
+        <div class="header-search">
+          <div class="glitch-input-wrapper">
+            <div class="input-container">
+              <input
+                type="text"
+                id="header-search-input"
+                class="holo-input"
+                placeholder=""
+                autocomplete="off"
+              />
+              <label
+                for="header-search-input"
+                class="input-label"
+                data-text="BUSCAR_OBJETO"
+                >BUSCAR_OBJETO</label
+              >
+              <div class="input-border"></div>
+              <div class="input-scanline"></div>
+              <div class="input-glow"></div>
+              <div class="input-data-stream">
+                <div class="stream-bar" style="--i: 0"></div>
+                <div class="stream-bar" style="--i: 1"></div>
+                <div class="stream-bar" style="--i: 2"></div>
+                <div class="stream-bar" style="--i: 3"></div>
+                <div class="stream-bar" style="--i: 4"></div>
+                <div class="stream-bar" style="--i: 5"></div>
+                <div class="stream-bar" style="--i: 6"></div>
+                <div class="stream-bar" style="--i: 7"></div>
+                <div class="stream-bar" style="--i: 8"></div>
+                <div class="stream-bar" style="--i: 9"></div>
+              </div>
+              <div class="input-corners">
+                <div class="corner corner-tl"></div>
+                <div class="corner corner-tr"></div>
+                <div class="corner corner-bl"></div>
+                <div class="corner corner-br"></div>
+              </div>
+            </div>
+          </div>
+          <!-- Dropdown de resultados de búsqueda -->
+          <div
+            class="search-results-dropdown"
+            id="search-results-dropdown"
+          ></div>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <div class="header-status">
+          <span class="text-label">Estado</span>
+          <span class="badge badge-online">EN LÍNEA</span>
+        </div>
+        <div class="header-date text-label" id="header-date"></div>
+
+        <!-- Favoritos -->
+        <div class="favorites-container">
+          <button
+            class="header-favs-btn"
+            id="btn-favs-toggle"
+            aria-label="Mis favoritos"
+          >
+            ★ Favoritos
+            <span class="favs-count-badge" id="favs-count-badge">0</span>
+          </button>
+          <div class="favs-dropdown" id="favs-dropdown">
+            <div class="favs-dropdown-header">
+              <span class="text-label">Descubrimientos guardados</span>
+              <button
+                class="btn-ghost btn btn-clear-favs"
+                id="btn-clear-all-favs"
+              >
+                Borrar todo
+              </button>
+            </div>
+            <div class="favs-dropdown-list" id="favs-dropdown-list"></div>
+          </div>
+        </div>
+
+        <nav class="header-nav">
+          <a href="./src/explorer.html" class="nav-link text-label"
+            >Explorador</a
+          >
+        </nav>
+      </div>
+    </header>
+
+    <!-- Grid -->
+    <main class="dashboard-grid">
+      <!-- Historia Aleatoria -->
+      <section class="panel panel-archive" aria-label="Archivo Cosmos">
+        <header class="panel-header">
+          <span class="text-label">Archivo Cosmos</span>
+          <span class="text-label text-muted" id="apod-date-badge">—</span>
+        </header>
+
+        <div class="archive-media-container" id="archive-media-container">
+          <div class="media-skeleton"></div>
+        </div>
+
+        <div class="archive-meta">
+          <div class="meta-row">
+            <span class="text-label">Objeto</span>
+            <p class="archive-title" id="apod-title">—</p>
+          </div>
+          <div class="meta-grid">
+            <div class="meta-item">
+              <span class="text-label">Clasificación</span>
+              <span class="text-data" id="apod-classification">—</span>
+            </div>
+            <div class="meta-item">
+              <span class="text-label">Fuente</span>
+              <span class="text-data" id="apod-source">NASA</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-actions">
+          <button class="btn btn-primary" id="btn-apod-detail">
+            Ver Detalles
+          </button>
+          <button class="btn btn-favorite" id="btn-apod-favorite">
+            ☆ Guardar
+          </button>
+        </div>
+      </section>
+
+      <!-- Descubrimiento diario -->
+      <section
+        class="panel panel-discovery"
+        aria-label="Descubrimiento del Día"
+      >
+        <div class="discovery-bg" id="discovery-bg" aria-hidden="true"></div>
+        <div class="discovery-overlay"></div>
+        <div class="discovery-content">
+          <span class="text-label">Descubrimiento del Día</span>
+          <h1 class="discovery-title" id="discovery-title">
+            Cargando datos astronómicos...
+          </h1>
+          <p class="discovery-excerpt text-body" id="discovery-excerpt">
+            Conectando con los archivos de NASA. Por favor espera.
+          </p>
+          <div class="discovery-footer">
+            <time class="text-label text-muted" id="discovery-date">—</time>
+            <button class="btn btn-ghost" id="btn-discovery-more">
+              Leer más →
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Amenazas -->
+      <section class="panel panel-threat" aria-label="Monitor de Amenazas">
+        <header class="panel-header">
+          <span class="text-label">Monitor de Amenazas</span>
+          <span class="text-label"><span id="neo-count">—</span> objetos</span>
+        </header>
+
+        <!-- Radar decorativo (uiverse.io) -->
+        <div class="threat-radar-row">
+          <div class="radar-loader"><span></span></div>
+          <div>
+            <p class="text-label" style="margin-bottom: 4px">Radar activo</p>
+            <p class="text-body" style="font-size: 0.72rem">
+              Objetos cercanos a la Tierra rastreados hoy
+            </p>
+          </div>
+        </div>
+
+        <ul class="threat-list" id="threat-list" aria-live="polite">
+          <li class="threat-skeleton"></li>
+          <li class="threat-skeleton"></li>
+          <li class="threat-skeleton"></li>
+        </ul>
+
+        <div class="panel-actions">
+          <a href="./src/explorer.html" class="btn btn-ghost"
+            >Ver todos en Explorador →</a
+          >
+        </div>
+      </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+      <span class="text-label text-muted">NEXUS © 2026</span>
+      <span class="text-label text-muted">·</span>
+      <span class="text-label text-muted">Datos: NASA Open APIs</span>
+      <span class="text-label text-muted">·</span>
+      <span class="text-label text-muted" id="last-updated"
+        >Última actualización: —</span
+      >
+    </footer>
+
+    <!-- MODAL -->
+    <dialog id="apod-dialog" aria-label="Detalle astronómico">
+      <div class="dialog-header">
+        <div>
+          <span class="text-label">Archivo Cosmos — Detalle</span>
+          <h2 class="text-title dialog-title" id="dialog-title">—</h2>
+        </div>
+        <form method="dialog">
+          <button class="dialog-close" aria-label="Cerrar">✕</button>
+        </form>
+      </div>
+      <div class="dialog-body wiki-body" id="dialog-body">
+        <!-- JS rellena contenido estilo Wikipedia -->
+      </div>
+      <div class="dialog-footer">
+        <button class="btn btn-favorite" id="dialog-btn-favorite">
+          ☆ Guardar en Favoritos
+        </button>
+        <form method="dialog">
+          <button class="btn btn-ghost">Cerrar</button>
+        </form>
+      </div>
+    </dialog>
+
+    <script type="module" src="./src/js/app.js"></script>
+  </body>
+</html>

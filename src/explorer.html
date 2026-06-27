@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NEXUS — Explorador</title>
+    <link rel="stylesheet" href="./css/style.css" />
+    <link rel="stylesheet" href="./css/explorer.css" />
+    <link rel="icon" href="../public/logo.png" />
+  </head>
+  <body>
+    <!-- OVERLAY -->
+    <div id="loading-overlay" role="status" aria-live="polite">
+      <p class="loading-logo">NEXUS</p>
+      <p class="loading-subtitle">Cargando Archivo...</p>
+      <div class="loading-bar-container">
+        <p class="loading-status" id="loading-status-text">
+          Obteniendo registros astronómicos...
+        </p>
+        <progress
+          class="loading-progress"
+          id="loading-progress"
+          value="20"
+          max="100"
+        ></progress>
+      </div>
+    </div>
+
+    <!-- HEADER -->
+    <header class="site-header">
+      <div class="header-brand">
+        <a href="../index.html">
+          <h1 class="header-logo">NEXUS</h1>
+        </a>
+        <p class="header-tagline text-label">
+          Sistema de Inteligencia Espacial
+        </p>
+      </div>
+      <div class="header-meta">
+        <div class="header-status">
+          <span class="text-label">Estado</span>
+          <span class="badge badge-online">EN LÍNEA</span>
+        </div>
+      </div>
+      <nav class="header-nav">
+        <a href="./explorer.html" class="nav-link nav-link--active text-label"
+          >Explorador</a
+        >
+      </nav>
+    </header>
+
+    <!-- CONTROLES -->
+    <div class="explorer-controls">
+      <div class="control-group">
+        <label for="search-input" class="text-label">Buscar</label>
+        <div class="search-wrapper">
+          <span class="search-icon" aria-hidden="true">⌕</span>
+          <input
+            type="text"
+            id="search-input"
+            class="control-input"
+            placeholder="Buscar por título..."
+            autocomplete="off"
+          />
+        </div>
+      </div>
+      <div class="control-group">
+        <label for="sort-select" class="text-label">Ordenar por</label>
+        <select id="sort-select" class="control-select">
+          <option value="date-desc">Fecha — Más reciente primero</option>
+          <option value="date-asc">Fecha — Más antigua primero</option>
+          <option value="title-asc">Título — A → Z</option>
+          <option value="title-desc">Título — Z → A</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <label for="filter-media" class="text-label">Tipo</label>
+        <select id="filter-media" class="control-select">
+          <option value="all">Todos los tipos</option>
+          <option value="image">Solo imágenes</option>
+          <option value="video">Solo videos</option>
+        </select>
+      </div>
+      <div class="control-group control-group--right">
+        <span class="text-label text-muted">Resultados</span>
+        <span class="text-label" id="results-count">—</span>
+      </div>
+    </div>
+
+    <!-- TABS DE CATEGORÍA -->
+    <div class="category-tabs" id="category-tabs">
+      <button class="cat-tab active" data-cat="apod">Imagen del Día</button>
+      <button class="cat-tab" data-cat="favs">★ Mis Favoritos</button>
+    </div>
+
+    <!-- MAIN -->
+    <main class="explorer-main">
+      <!-- FAVORITOS — siempre arriba, ocultos si están vacíos -->
+      <section
+        class="explorer-section favorites-section"
+        id="favorites-section"
+        aria-label="Favoritos guardados"
+        style="display: none"
+      >
+        <header class="section-header">
+          <div>
+            <h2 class="section-title text-label">Mis Descubrimientos</h2>
+            <p class="section-subtitle text-body">
+              Tu colección personal · <span id="fav-count">0</span> guardados
+            </p>
+          </div>
+          <button class="btn btn-ghost" id="btn-clear-favorites">
+            Borrar todo
+          </button>
+        </header>
+        <div class="gallery-grid" id="favorites-grid" aria-live="polite"></div>
+      </section>
+
+      <!-- GALERÍA PRINCIPAL -->
+      <section class="explorer-section" aria-label="Galería de archivo">
+        <header class="section-header">
+          <div>
+            <h2 class="section-title text-label" id="gallery-section-title">
+              Galería del Archivo
+            </h2>
+            <p class="section-subtitle text-body" id="gallery-section-subtitle">
+              Selección aleatoria del archivo astronómico de NASA
+            </p>
+          </div>
+          <button class="btn btn-ghost" id="btn-reload-gallery">
+            ↺ Actualizar
+          </button>
+        </header>
+        <div class="gallery-grid" id="gallery-grid" aria-live="polite"></div>
+      </section>
+
+      <!-- VER MÁS -->
+      <div
+        class="load-more-container"
+        id="load-more-container"
+        style="display: none"
+      >
+        <button class="btn-load-more" id="btn-load-more">Cargar más →</button>
+      </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+      <span class="text-label text-muted">NEXUS © 2026</span>
+      <span class="text-label text-muted">·</span>
+      <span class="text-label text-muted">Datos: NASA Open APIs</span>
+      <span class="text-label text-muted">·</span>
+      <span class="text-label text-muted" id="last-updated"
+        >Última actualización: —</span
+      >
+    </footer>
+
+    <!-- MODAL WIKIPEDIA -->
+    <dialog id="apod-dialog" aria-label="Detalle">
+      <div class="dialog-header">
+        <div>
+          <span class="text-label" id="dialog-category-label">Archivo</span>
+          <h2 class="text-title" id="dialog-title" style="margin-top: 4px">
+            —
+          </h2>
+        </div>
+        <form method="dialog">
+          <button class="dialog-close" aria-label="Cerrar">✕</button>
+        </form>
+      </div>
+      <div class="dialog-body wiki-body" id="dialog-body"></div>
+      <div class="dialog-footer">
+        <button class="btn btn-favorite" id="dialog-btn-favorite">
+          ☆ Guardar en Favoritos
+        </button>
+        <form method="dialog">
+          <button class="btn btn-ghost">Cerrar</button>
+        </form>
+      </div>
+    </dialog>
+
+    <script type="module" src="./js/explorer.js"></script>
+  </body>
+</html>
